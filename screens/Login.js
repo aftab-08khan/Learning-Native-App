@@ -1,4 +1,5 @@
-import React from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import React, { useState } from "react";
 import {
   Text,
   TextInput,
@@ -8,9 +9,39 @@ import {
   Image,
   Keyboard,
   TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
+import { auth } from "../firebase.config";
 
 const Login = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleInputChange = (setter) => (value) => {
+    setter(value);
+    if (error) {
+      setError(null);
+    }
+  };
+
+  const handleLogin = () => {
+    setError(null);
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+        if (user.emailVerified) {
+          navigation.navigate("Home");
+        } else {
+          Alert.alert("Invalid Credentials Try Again");
+        }
+      })
+      .catch((error) => {
+        console.error("Login Error: ", error.message); // Debug log
+        setError(error.message);
+      });
+  };
+
   const handleDismissKeyboard = () => {
     Keyboard.dismiss();
   };
@@ -18,6 +49,12 @@ const Login = ({ navigation }) => {
   return (
     <TouchableWithoutFeedback onPress={handleDismissKeyboard}>
       <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.homeButton}
+          onPress={() => navigation.navigate("Main")}
+        >
+          <Text style={styles.homeButtonText}>Go to Home</Text>
+        </TouchableOpacity>
         <Image
           source={{
             uri: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
@@ -32,15 +69,17 @@ const Login = ({ navigation }) => {
           placeholder="Enter your email"
           keyboardType="email-address"
           autoCapitalize="none"
+          onChangeText={handleInputChange(setEmail)}
         />
         <TextInput
           style={styles.input}
           placeholder="Enter your password"
           secureTextEntry
           autoCapitalize="none"
+          onChangeText={handleInputChange(setPassword)}
         />
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
@@ -56,14 +95,6 @@ const Login = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
-
-        {/* Home Button */}
-        <TouchableOpacity
-          style={styles.homeButton}
-          onPress={() => navigation.navigate("Main")}
-        >
-          <Text style={styles.homeButtonText}>Go to Home</Text>
-        </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -135,16 +166,18 @@ const styles = StyleSheet.create({
   },
   homeButton: {
     marginTop: 20,
-    width: "100%",
-    height: 50,
     backgroundColor: "#28a745", // Green color
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 8,
+    position: "absolute",
+    top: 0,
+    left: 30,
+    padding: 12,
   },
   homeButtonText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
   },
 });

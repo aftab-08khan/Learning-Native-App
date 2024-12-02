@@ -5,35 +5,45 @@ import { NavigationContainer } from "@react-navigation/native";
 import Main from "./screens/main";
 import SignUp from "./screens/signUp";
 import Login from "./screens/Login";
+import Home from "./screens/Home";
+import { ThemeContext } from "./context/themeContext";
 
 export default function App() {
   const Stack = createStackNavigator();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.container}>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="Main">
-            <Stack.Screen
-              name="Main"
-              component={Main}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="SignUp"
-              component={SignUp}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="Login"
-              component={Login}
-              options={{ headerShown: false }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-        <StatusBar style="auto" />
-      </View>
-    </SafeAreaView>
+    <ThemeContext>
+      <StatusBar style="auto" />
+      <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Home">
+              <Stack.Screen
+                name="Main"
+                component={Main}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SignUp"
+                component={SignUp}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Login"
+                component={Login}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Home"
+                component={Home}
+                options={{ headerShown: false }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+          <StatusBar style="auto" />
+        </View>
+      </SafeAreaView>
+    </ThemeContext>
   );
 }
 

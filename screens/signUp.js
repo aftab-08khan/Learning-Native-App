@@ -45,7 +45,7 @@ const SignUp = ({ navigation }) => {
       })
       .catch((error) => {
         const errorMsg = error.message;
-        setError(errorMsg);
+        setError(errorMsg); // Set error message from Firebase
       });
   };
 

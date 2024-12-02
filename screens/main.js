@@ -39,36 +39,36 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     width: "100%",
-    backgroundColor: "#f7f7f7", // Light gray background
+    backgroundColor: "#f7f7f7",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#333", // Dark gray text color
+    color: "#333",
     marginBottom: 20,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    color: "#666", // Lighter gray text color for subtitle
+    color: "#666",
     textAlign: "center",
     marginBottom: 30,
   },
   button: {
     width: "80%",
     height: 50,
-    backgroundColor: "#007bff", // Blue button color
+    backgroundColor: "#007bff",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
-    elevation: 2, // Shadow effect for Android
-    shadowColor: "#000", // Shadow for iOS
+    elevation: 2,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
   },
   buttonText: {
-    color: "#fff", // White text color
+    color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
@@ -77,14 +77,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   footerText: {
-    color: "#333", // Dark gray text
+    color: "#333",
     fontSize: 14,
   },
   linkButton: {
     paddingLeft: 5,
   },
   linkText: {
-    color: "#007bff", // Blue color for the login link
+    color: "#007bff",
     fontSize: 14,
     fontWeight: "bold",
   },
