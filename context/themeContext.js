@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { Keyboard } from "react-native";
 
 const Theme = createContext();
 
@@ -9,8 +10,12 @@ export const ThemeContext = ({ children }) => {
   const handleMode = () => {
     setMode((prev) => !prev);
   };
-
+  const handleDismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
   return (
-    <Theme.Provider value={{ mode, handleMode }}>{children}</Theme.Provider>
+    <Theme.Provider value={{ mode, handleMode, handleDismissKeyboard }}>
+      {children}
+    </Theme.Provider>
   );
 };

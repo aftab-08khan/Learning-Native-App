@@ -17,7 +17,7 @@ export default function App() {
       <SafeAreaView style={styles.container}>
         <View style={styles.container}>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName="Home">
+            <Stack.Navigator initialRouteName="Main">
               <Stack.Screen
                 name="Main"
                 component={Main}

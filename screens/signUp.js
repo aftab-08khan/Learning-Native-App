@@ -14,8 +14,10 @@ import {
   Keyboard,
 } from "react-native";
 import { auth } from "../firebase.config";
+import { useTheme } from "../context/themeContext";
 
 const SignUp = ({ navigation }) => {
+  const { handleDismissKeyboard } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -47,10 +49,6 @@ const SignUp = ({ navigation }) => {
         const errorMsg = error.message;
         setError(errorMsg); // Set error message from Firebase
       });
-  };
-
-  const handleDismissKeyboard = () => {
-    Keyboard.dismiss();
   };
 
   return (

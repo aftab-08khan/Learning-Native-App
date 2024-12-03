@@ -9,7 +9,8 @@ import {
 } from "react-native";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { useTheme } from "../context/themeContext";
-
+import Container from "../component/Container";
+// import InterviewQsContainer from "../component/InterviewQsContainer";
 const Home = ({ navigation }) => {
   const [userEmail, setUserEmail] = useState(null);
   const { mode, handleMode } = useTheme();
@@ -50,18 +51,11 @@ const Home = ({ navigation }) => {
           style={styles.profileImage}
         />
         <View style={styles.welcomeContainer}>
-          <Text
-            style={[
-              styles.greetingText,
-              mode === false ? styles.lightText : styles.darkText,
-            ]}
-          >
-            Welcome
-          </Text>
+          <Text style={[styles.greetingText]}>Welcome</Text>
           <Text
             style={[
               styles.welcomeText,
-              mode === false ? styles.lightText : styles.darkText,
+              // mode === false ? styles.lightText : styles.darkText,
             ]}
           >
             {userEmail ? userEmail : "Guest"}
@@ -89,6 +83,8 @@ const Home = ({ navigation }) => {
       >
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
+      {/* <InterviewQsContainer /> */}
+      <Container />
     </View>
   );
 };
@@ -134,11 +130,13 @@ const styles = StyleSheet.create({
   greetingText: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "#000",
   },
   welcomeText: {
     fontSize: 16,
     fontWeight: "500",
     marginTop: 5,
+    color: "#000",
   },
   lightText: {
     color: "#333",
@@ -169,6 +167,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 8,
     marginTop: 30,
+    marginBottom: 50,
   },
   lightButton: {
     backgroundColor: "#d9534f",
