@@ -1,5 +1,9 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   TextInput,
@@ -12,11 +16,13 @@ import {
   Alert,
 } from "react-native";
 import { auth } from "../firebase.config";
+import { useUser } from "../context/UserContext";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { validateCredentials } = useUser();
 
   const handleInputChange = (setter) => (value) => {
     setter(value);
@@ -41,7 +47,15 @@ const Login = ({ navigation }) => {
         setError(error.message);
       });
   };
-
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        validateCredentials(user.email);
+      }
+    });
+    return unsubscribe;
+  }, []);
   const handleDismissKeyboard = () => {
     Keyboard.dismiss();
   };
@@ -90,7 +104,6 @@ const Login = ({ navigation }) => {
               style={styles.footerLink}
               onPress={() => navigation.navigate("SignUp")}
             >
-              {" "}
               Sign Up
             </Text>
           </TouchableOpacity>

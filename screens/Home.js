@@ -84,7 +84,7 @@ const Home = ({ navigation }) => {
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
       {/* <InterviewQsContainer /> */}
-      <Container />
+      <Container navigation={navigation} />
     </View>
   );
 };

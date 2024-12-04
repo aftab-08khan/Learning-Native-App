@@ -11,25 +11,33 @@ import {
   TouchableWithoutFeedback,
   Alert,
   ActivityIndicator,
+  Image,
+  FlatList,
 } from "react-native";
 import Heading from "./Heading";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useTheme } from "../context/themeContext";
-import { addDoc, collection } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../firebase.config";
 import UploadImageComponent from "./UploadImage";
+import { useUser } from "../context/UserContext";
 
-const Container = () => {
+const Container = ({ navigation }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [languageName, setLanguageName] = useState("");
-  // const [description, setDescription] = useState("");
   const { handleDismissKeyboard } = useTheme();
   const [languagesData, setLanguagesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imageUri, setImageUri] = useState(null);
-
+  const { admin } = useUser();
   const handleSubmit = async () => {
-    if (!languageName || !description) {
+    if (!languageName || !imageUri) {
       Alert.alert("Validation Error", "Please enter both fields.");
       return;
     }
@@ -41,65 +49,104 @@ const Container = () => {
         createdAt: new Date(),
       });
       Alert.alert("Success", "Your data has been saved.");
+      fetchLanguagesData();
+      setIsVisible(false);
+      setLanguageName("");
+      setImageUri(null);
     } catch (error) {
       Alert.alert("Error", error.message || "An error occurred.");
     }
-
-    setIsVisible(false);
-    setLanguageName("");
-    // setDescription("");
   };
 
-  // Fetch data from Firestore
-  // useEffect(() => {
-  //   const subscriber = firestore()
-  //     .collection("InterViewQsLanguage")
-  //     .orderBy("createdAt", "desc")
-  //     .onSnapshot((querySnapshot) => {
-  //       const data = [];
-  //       querySnapshot.forEach((documentSnapshot) => {
-  //         data.push({
-  //           ...documentSnapshot.data(),
-  //           key: documentSnapshot.id,
-  //         });
-  //       });
-  //       setLanguagesData(data);
-  //       setLoading(false);
-  //     });
+  const fetchLanguagesData = async () => {
+    setLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "languages"));
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setLanguagesData(data);
+    } catch (error) {
+      Alert.alert("Error", error.message || "Failed to fetch data.");
+    }
+    setLoading(false);
+  };
+  const handleDelete = async (id) => {
+    try {
+      await deleteDoc(doc(db, "languages", id));
 
-  //   return () => subscriber(); // Unsubscribe from snapshot listener
-  // }, []);
+      setLanguagesData((prev) => prev.filter((item) => item.id !== id));
+      Alert.alert("Success", "Your data has been deleted.");
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        error.message || "There was an issue deleting the data."
+      );
+    }
+  };
 
-  // if (loading) {
-  //   return (
-  //     <View style={styles.loaderContainer}>
-  //       <ActivityIndicator size="large" color="#4CAF50" />
-  //     </View>
-  //   );
-  // }
+  useEffect(() => {
+    fetchLanguagesData();
+  }, []);
+
+  const renderLanguageItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.languageItem}
+      onPress={() => navigation.navigate("SingleProfile")}
+    >
+      <Text style={styles.languageName}>{item.languageName}</Text>
+      <Image source={{ uri: item.imageUri }} style={styles.icon} />
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => {
+          Alert.alert(
+            "Confirm Delete",
+            "Are you sure you want to delete this",
+            [
+              {
+                text: "Cancel",
+                style: "cancel",
+              },
+              { text: "Delete", onPress: () => handleDelete(item.id) },
+            ]
+          );
+        }}
+      >
+        <Text style={styles.deleteText}>Delete</Text>
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
 
   return (
     <TouchableWithoutFeedback onPress={handleDismissKeyboard}>
       <View style={styles.main}>
         <View style={styles.flex}>
           <Heading>Interview Questions</Heading>
-
-          <TouchableOpacity
-            style={styles.pulseButton}
-            onPress={() => setIsVisible(true)}
-          >
-            <MaterialIcons name="add" size={24} color="#fff" />
-          </TouchableOpacity>
+          {admin === true ? (
+            <TouchableOpacity
+              style={styles.pulseButton}
+              onPress={() => setIsVisible(true)}
+            >
+              <MaterialIcons name="add" size={24} color="#fff" />
+            </TouchableOpacity>
+          ) : null}
         </View>
 
-        <View>
-          {languagesData?.map((item) => (
-            <View key={item.key} style={styles.languageItem}>
-              <Text style={styles.languageName}>{item.languageName}</Text>
-              <Text style={styles.languageDescription}>{item.description}</Text>
-            </View>
-          ))}
-        </View>
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        ) : (
+          <FlatList
+            data={languagesData}
+            renderItem={renderLanguageItem}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.flatListContainer}
+          />
+        )}
 
         <Modal
           visible={isVisible}
@@ -113,7 +160,6 @@ const Container = () => {
           >
             <View style={styles.modalContent}>
               <Text style={styles.modalHeading}>Add New Language</Text>
-
               <TextInput
                 placeholder="Language Name"
                 value={languageName}
@@ -125,16 +171,6 @@ const Container = () => {
                 setImageUri={setImageUri}
                 imageUri={imageUri}
               />
-              {/* <TextInput
-                placeholder="Description"
-                value={description}
-                onChangeText={setDescription}
-                style={[styles.input, styles.textArea]}
-                multiline
-                numberOfLines={4}
-                placeholderTextColor="#777"
-              /> */}
-
               <TouchableOpacity
                 style={styles.submitButton}
                 onPress={handleSubmit}
@@ -183,20 +219,37 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  flatListContainer: {
+    paddingHorizontal: 10,
+    marginTop: 20,
+  },
   languageItem: {
-    marginVertical: 10,
-    padding: 15,
-    borderRadius: 8,
+    width: 150,
+    padding: 10,
+    borderRadius: 12,
     backgroundColor: "#f4f4f4",
+    marginRight: 10,
+    alignItems: "center",
   },
   languageName: {
     fontWeight: "bold",
     fontSize: 18,
     color: "#333",
+    marginTop: 10,
+    marginBottom: 12,
   },
-  languageDescription: {
-    fontSize: 16,
-    color: "#555",
+  icon: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    resizeMode: "cover",
+  },
+  deleteButton: {
+    backgroundColor: "#f44336",
+    paddingHorizontal: 20,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginTop: 8,
   },
   modalContainer: {
     flex: 1,
@@ -225,10 +278,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 15,
   },
-  textArea: {
-    height: 100,
-    textAlignVertical: "top",
-  },
   submitButton: {
     backgroundColor: "#4CAF50",
     paddingVertical: 15,
@@ -250,5 +299,10 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: "#fff",
     fontSize: 18,
+  },
+  deleteText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
