@@ -10,6 +10,7 @@ import Home from "./screens/Home";
 import { ThemeProvider } from "./context/themeContext";
 import { UserContextProvider } from "./context/UserContext";
 import LanguageProfile from "./screens/LanguageProfile";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -19,7 +20,7 @@ export default function App() {
       <ThemeProvider>
         <SafeAreaView style={styles.container}>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName="Main">
+            <Stack.Navigator initialRouteName="Home">
               <Stack.Screen
                 name="Main"
                 component={Main}
@@ -41,7 +42,7 @@ export default function App() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen
-                name="SingleProfile"
+                name="LanguageProfile"
                 component={LanguageProfile}
                 options={{ headerShown: false }}
               />

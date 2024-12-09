@@ -99,10 +99,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   lightContainer: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fff",
   },
   darkContainer: {
-    backgroundColor: "#333",
+    backgroundColor: "#292f3d",
   },
   header: {
     width: "100%",

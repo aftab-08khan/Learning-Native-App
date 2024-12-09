@@ -16,7 +16,6 @@ const Main = ({ navigation }) => {
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 
-      {/* Footer with Login link */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>Already have an account?</Text>
         <TouchableOpacity

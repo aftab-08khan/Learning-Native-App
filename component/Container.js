@@ -13,8 +13,8 @@ import {
   ActivityIndicator,
   Image,
   FlatList,
+  Keyboard,
 } from "react-native";
-import Heading from "./Heading";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useTheme } from "../context/themeContext";
 import {
@@ -36,19 +36,20 @@ const Container = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [imageUri, setImageUri] = useState(null);
   const { admin } = useUser();
+
   const handleSubmit = async () => {
-    if (!languageName || !imageUri) {
-      Alert.alert("Validation Error", "Please enter both fields.");
+    if (!languageName.trim() || !imageUri) {
+      Alert.alert();
       return;
     }
 
     try {
       await addDoc(collection(db, "languages"), {
-        languageName,
+        languageName: languageName.trim(),
         imageUri,
         createdAt: new Date(),
       });
-      Alert.alert("Success", "Your data has been saved.");
+      Alert.alert("Success", "Language added successfully!");
       fetchLanguagesData();
       setIsVisible(false);
       setLanguageName("");
@@ -72,17 +73,14 @@ const Container = ({ navigation }) => {
     }
     setLoading(false);
   };
+
   const handleDelete = async (id) => {
     try {
       await deleteDoc(doc(db, "languages", id));
-
       setLanguagesData((prev) => prev.filter((item) => item.id !== id));
-      Alert.alert("Success", "Your data has been deleted.");
+      Alert.alert("Success", "Language deleted successfully!");
     } catch (error) {
-      Alert.alert(
-        "Error",
-        error.message || "There was an issue deleting the data."
-      );
+      Alert.alert("Error", error.message || "Failed to delete language.");
     }
   };
 
@@ -93,21 +91,26 @@ const Container = ({ navigation }) => {
   const renderLanguageItem = ({ item }) => (
     <TouchableOpacity
       style={styles.languageItem}
-      onPress={() => navigation.navigate("SingleProfile")}
+      onPress={() =>
+        navigation.navigate("LanguageProfile", {
+          languageName: item.languageName,
+        })
+      }
     >
       <Text style={styles.languageName}>{item.languageName}</Text>
-      <Image source={{ uri: item.imageUri }} style={styles.icon} />
+      {item.imageUri ? (
+        <Image source={{ uri: item.imageUri }} style={styles.icon} />
+      ) : (
+        <Text>No Image</Text>
+      )}
       <TouchableOpacity
         style={styles.deleteButton}
         onPress={() => {
           Alert.alert(
             "Confirm Delete",
-            "Are you sure you want to delete this",
+            "Are you sure you want to delete this language?",
             [
-              {
-                text: "Cancel",
-                style: "cancel",
-              },
+              { text: "Cancel", style: "cancel" },
               { text: "Delete", onPress: () => handleDelete(item.id) },
             ]
           );
@@ -119,18 +122,24 @@ const Container = ({ navigation }) => {
   );
 
   return (
-    <TouchableWithoutFeedback onPress={handleDismissKeyboard}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.main}>
         <View style={styles.flex}>
-          <Heading>Interview Questions</Heading>
-          {admin === true ? (
+          <Text style={styles.heading}>Languages</Text>
+          {/* {admin && (
             <TouchableOpacity
               style={styles.pulseButton}
               onPress={() => setIsVisible(true)}
             >
               <MaterialIcons name="add" size={24} color="#fff" />
             </TouchableOpacity>
-          ) : null}
+          )} */}
+          <TouchableOpacity
+            style={styles.pulseButton}
+            onPress={() => setIsVisible(true)}
+          >
+            <MaterialIcons name="add" size={24} color="#fff" />
+          </TouchableOpacity>
         </View>
 
         {loading ? (
@@ -160,30 +169,37 @@ const Container = ({ navigation }) => {
           >
             <View style={styles.modalContent}>
               <Text style={styles.modalHeading}>Add New Language</Text>
-              <TextInput
-                placeholder="Language Name"
-                value={languageName}
-                onChangeText={setLanguageName}
-                style={styles.input}
-                placeholderTextColor="#777"
-              />
-              <UploadImageComponent
-                setImageUri={setImageUri}
-                imageUri={imageUri}
-              />
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={handleSubmit}
-              >
-                <Text style={styles.submitButtonText}>Submit</Text>
-              </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => setIsVisible(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
+              <View style={styles.formContainer}>
+                <Text style={styles.label}>Language Name</Text>
+                <TextInput
+                  placeholder="Enter Language Name"
+                  value={languageName}
+                  onChangeText={setLanguageName}
+                  style={styles.input}
+                  placeholderTextColor="#aaa"
+                />
+
+                <UploadImageComponent
+                  setImageUri={setImageUri}
+                  imageUri={imageUri}
+                />
+              </View>
+
+              <View style={styles.btnContainer}>
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={handleSubmit}
+                >
+                  <Text style={styles.submitButtonText}>Submit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => setIsVisible(false)}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </KeyboardAvoidingView>
         </Modal>
@@ -193,13 +209,99 @@ const Container = ({ navigation }) => {
 };
 
 export default Container;
-
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "90%",
+    padding: 20,
+    borderRadius: 12,
+    backgroundColor: "#414652",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  modalHeading: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "white",
+    marginBottom: 15,
+  },
+  formContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    color: "#fff",
+    marginBottom: 8,
+    fontWeight: "bold",
+  },
+  input: {
+    width: "100%",
+    padding: 12,
+    borderWidth: 2,
+    borderColor: "#414652",
+    borderRadius: 8,
+    marginBottom: 15,
+    fontSize: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  btnContainer: {
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  submitButton: {
+    width: "100%",
+    backgroundColor: "#5A9BFC",
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+  },
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  cancelButton: {
+    width: "100%",
+    backgroundColor: "#FC5A5A",
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 10,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+  },
+  cancelButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   main: {
     width: "100%",
     padding: 12,
     borderRadius: 12,
     backgroundColor: "#fff",
+    elevation: 2,
+    shadowColor: "#999",
+    shadowOffset: 7,
+    shadowOpacity: 0.7,
+    shadowRadius: 12,
   },
   flex: {
     flexDirection: "row",
@@ -244,65 +346,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     resizeMode: "cover",
   },
+  btnBox: {
+    gap: 12,
+  },
+
   deleteButton: {
     backgroundColor: "#f44336",
     paddingHorizontal: 20,
     paddingVertical: 6,
     borderRadius: 8,
     marginTop: 8,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: "90%",
-    padding: 25,
-    borderRadius: 15,
-    backgroundColor: "#fff",
-  },
-  modalHeading: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  input: {
-    width: "100%",
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  submitButton: {
-    backgroundColor: "#4CAF50",
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  submitButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  cancelButton: {
-    marginTop: 10,
-    paddingVertical: 15,
-    alignItems: "center",
-    backgroundColor: "#f44336",
-    borderRadius: 8,
-  },
-  cancelButtonText: {
-    color: "#fff",
-    fontSize: 18,
-  },
-  deleteText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
   },
 });

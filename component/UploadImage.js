@@ -50,6 +50,7 @@ export default UploadImageComponent;
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    width: "100%",
   },
   uploadButton: {
     backgroundColor: "#4CAF50",

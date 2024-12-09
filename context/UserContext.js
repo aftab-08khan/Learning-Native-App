@@ -22,7 +22,6 @@ export const UserContextProvider = ({ children }) => {
     }
   };
 
-  // Monitor Firebase Authentication State
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
