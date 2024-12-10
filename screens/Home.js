@@ -10,6 +10,7 @@ import {
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { useTheme } from "../context/themeContext";
 import Container from "../component/Container";
+import { SafeAreaView } from "react-native";
 // import InterviewQsContainer from "../component/InterviewQsContainer";
 const Home = ({ navigation }) => {
   const [userEmail, setUserEmail] = useState(null);
@@ -37,55 +38,59 @@ const Home = ({ navigation }) => {
   };
 
   return (
-    <View
+    <SafeAreaView
       style={[
-        styles.container,
+        { flex: 1 },
         mode === false ? styles.darkContainer : styles.lightContainer,
       ]}
     >
-      <View style={[styles.header]}>
-        <Image
-          source={{
-            uri: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-          }}
-          style={styles.profileImage}
-        />
-        <View style={styles.welcomeContainer}>
-          <Text style={[styles.greetingText]}>Welcome</Text>
-          <Text
+      <View style={styles.container}>
+        <View style={[styles.header]}>
+          <Image
+            source={{
+              uri: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+            }}
+            style={styles.profileImage}
+          />
+          <View style={styles.welcomeContainer}>
+            <Text style={[styles.greetingText]}>Welcome</Text>
+            <Text
+              style={[
+                styles.welcomeText,
+                // mode === false ? styles.lightText : styles.darkText,
+              ]}
+            >
+              {userEmail ? userEmail : "Guest"}
+            </Text>
+          </View>
+          <TouchableOpacity
             style={[
-              styles.welcomeText,
-              // mode === false ? styles.lightText : styles.darkText,
+              styles.themeToggleButton,
+              mode === false
+                ? styles.darkToggleButton
+                : styles.lightToggleButton,
             ]}
+            onPress={handleMode}
           >
-            {userEmail ? userEmail : "Guest"}
-          </Text>
+            <Text style={styles.toggleButtonText}>
+              {mode === false ? "Light Mode" : "Dark Mode"}
+            </Text>
+          </TouchableOpacity>
         </View>
+
         <TouchableOpacity
           style={[
-            styles.themeToggleButton,
-            mode === false ? styles.darkToggleButton : styles.lightToggleButton,
+            styles.logoutButton,
+            mode === false ? styles.darkButton : styles.lightButton,
           ]}
-          onPress={handleMode}
+          onPress={handleLogout}
         >
-          <Text style={styles.toggleButtonText}>
-            {mode === false ? "Light Mode" : "Dark Mode"}
-          </Text>
+          <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
+        {/* <InterviewQsContainer /> */}
+        <Container navigation={navigation} />
       </View>
-
-      <TouchableOpacity
-        style={[
-          styles.logoutButton,
-          mode === false ? styles.darkButton : styles.lightButton,
-        ]}
-        onPress={handleLogout}
-      >
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
-      {/* <InterviewQsContainer /> */}
-      <Container navigation={navigation} />
-    </View>
+    </SafeAreaView>
   );
 };
 

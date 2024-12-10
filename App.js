@@ -11,6 +11,7 @@ import { ThemeProvider } from "./context/themeContext";
 import { UserContextProvider } from "./context/UserContext";
 import LanguageProfile from "./screens/LanguageProfile";
 import { LinearGradient } from "expo-linear-gradient";
+import QuestionsAnswer from "./screens/QuestionsAnswer";
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -18,7 +19,8 @@ export default function App() {
   return (
     <UserContextProvider>
       <ThemeProvider>
-        <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1 }}>
+          {/* <SafeAreaView style={styles.container}> */}
           <NavigationContainer>
             <Stack.Navigator initialRouteName="Home">
               <Stack.Screen
@@ -46,10 +48,16 @@ export default function App() {
                 component={LanguageProfile}
                 options={{ headerShown: false }}
               />
+              <Stack.Screen
+                name="QuestionAnswer"
+                component={QuestionsAnswer}
+                options={{ headerShown: false }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
           <StatusBar style="auto" />
-        </SafeAreaView>
+          {/* </SafeAreaView> */}
+        </View>
       </ThemeProvider>
     </UserContextProvider>
   );
@@ -58,7 +66,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     width: "100%",
   },
 });

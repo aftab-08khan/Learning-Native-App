@@ -9,25 +9,27 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  SafeAreaView,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import ProfileItemContainer from "../component/ProfileItemContainer";
 import Heading from "../component/Heading";
 import { useTheme } from "../context/themeContext";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc } from "firebase/firestore";
 import { db } from "../firebase.config";
 import UploadImageComponent from "../component/UploadImage";
+
 const LanguageProfile = () => {
   const route = useRoute();
-  const { mode } = useTheme();
+  const { mode, title, setTitle } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const [title, setTitle] = useState("");
   const [imageUri, setImageUri] = useState(null);
   const navigation = useNavigation();
   const { languageName } = route.params;
+  console.log(languageName, "lan");
 
   const questionsData = [
     {
@@ -45,8 +47,6 @@ const LanguageProfile = () => {
   ];
 
   const handleModalClose = (val, title) => {
-    console.log(title === "Create Console Log Questions");
-
     setIsVisible(val);
     setTitle(title);
     setAnswer("");
@@ -58,23 +58,32 @@ const LanguageProfile = () => {
       Alert.alert("Validation Error", "Please enter all fields.");
       return;
     }
-    try {
-      let collectionName = "";
 
+    try {
+      // Ensure languageName is a valid document in "languages" collection
+      const languageDocRef = doc(db, "languages", languageName);
+
+      // Dynamically determine the subcollection name based on the title
+      let subCollectionName = "";
       if (title === "Create Theory Questions") {
-        collectionName = "CreateTheoryQuestions";
+        subCollectionName = "CreateTheoryQuestions";
       } else if (title === "Create Coding Questions") {
-        collectionName = "CreateCodingQuestions";
+        subCollectionName = "CreateCodingQuestions";
       } else if (title === "Create Console Log Questions") {
-        collectionName = "CreateConsoleLogQuestions";
+        subCollectionName = "CreateConsoleLogQuestions";
       }
 
-      if (collectionName) {
-        await addDoc(collection(db, collectionName), {
+      // Check for a valid subcollection name and proceed
+      if (subCollectionName) {
+        // Add the data to the subcollection under the specific language document
+        const subCollectionRef = collection(languageDocRef, subCollectionName);
+
+        await addDoc(subCollectionRef, {
           question: question.trim(),
           answer: answer.trim(),
           createdAt: new Date(),
         });
+
         Alert.alert("Success", "Your question has been added successfully!");
         setIsVisible(false);
         setAnswer("");
@@ -87,8 +96,15 @@ const LanguageProfile = () => {
     }
   };
 
+  const handleTitle = (value) => {
+    setTitle(value);
+    navigation.navigate("QuestionAnswer");
+  };
+
   return (
-    <View style={{ flex: 1, backgroundColor: "#292f3d" }}>
+    <SafeAreaView
+      style={[{ flex: 1 }, mode === false ? styles.lightMode : styles.darkMode]}
+    >
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -96,7 +112,14 @@ const LanguageProfile = () => {
         >
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{languageName}</Text>
+        <Text
+          style={[
+            styles.headerTitle,
+            mode === false ? styles.darkText : styles.lightText,
+          ]}
+        >
+          {languageName}
+        </Text>
       </View>
 
       <View style={styles.content}>
@@ -107,6 +130,7 @@ const LanguageProfile = () => {
               key={item.title}
               title={item.title}
               viewLink={item.viewLink}
+              handleTitle={handleTitle}
             />
           );
         })}
@@ -143,13 +167,13 @@ const LanguageProfile = () => {
                   onChangeText={(text) => setAnswer(text)}
                 />
               </View>
-              {"Create Coding Questions" ||
-                ("Create Console Log Questions" && (
-                  <UploadImageComponent
-                    setImageUri={setImageUri}
-                    imageUri={imageUri}
-                  />
-                ))}
+              {title === "Create Console Log Questions" ||
+              title === "Create Coding Questions" ? (
+                <UploadImageComponent
+                  setImageUri={setImageUri}
+                  imageUri={imageUri}
+                />
+              ) : null}
 
               <TouchableOpacity
                 style={styles.submitButton}
@@ -168,13 +192,25 @@ const LanguageProfile = () => {
           </KeyboardAvoidingView>
         </Modal>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default LanguageProfile;
 
 const styles = StyleSheet.create({
+  lightMode: {
+    backgroundColor: "#414652",
+  },
+  darkMode: {
+    backgroundColor: "#fff",
+  },
+  lightText: {
+    color: "#414652",
+  },
+  darkText: {
+    color: "#fff",
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -191,7 +227,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    color: "white",
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",

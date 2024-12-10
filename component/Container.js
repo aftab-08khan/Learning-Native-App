@@ -27,11 +27,12 @@ import {
 import { db } from "../firebase.config";
 import UploadImageComponent from "./UploadImage";
 import { useUser } from "../context/UserContext";
+import Heading from "./Heading";
 
 const Container = ({ navigation }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [languageName, setLanguageName] = useState("");
-  const { handleDismissKeyboard } = useTheme();
+  const { handleDismissKeyboard, mode } = useTheme();
   const [languagesData, setLanguagesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [imageUri, setImageUri] = useState(null);
@@ -125,7 +126,7 @@ const Container = ({ navigation }) => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.main}>
         <View style={styles.flex}>
-          <Text style={styles.heading}>Languages</Text>
+          <Heading textColor={"#414652"}>Languages</Heading>
           {/* {admin && (
             <TouchableOpacity
               style={styles.pulseButton}

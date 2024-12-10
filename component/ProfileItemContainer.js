@@ -1,11 +1,18 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Heading from "./Heading";
+import { useTheme } from "../context/themeContext";
 
-const ProfileItemContainer = ({ title, viewLink, onPress }) => {
+const ProfileItemContainer = ({ title, viewLink, onPress, handleTitle }) => {
+  const { mode } = useTheme();
+
   return (
-    <View style={styles.main}>
-      <Heading textColor={"#e7e8e9"}>{title}</Heading>
+    <View
+      style={[styles.main, mode === false ? styles.darkMode : styles.lightMode]}
+    >
+      <Heading textColor={mode === false ? "#414652" : "#e7e8e9"}>
+        {title}
+      </Heading>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.buttonAdd}
@@ -13,7 +20,10 @@ const ProfileItemContainer = ({ title, viewLink, onPress }) => {
         >
           <Text style={styles.buttonText}>Add Questions</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonView}>
+        <TouchableOpacity
+          style={styles.buttonView}
+          onPress={() => handleTitle(title)}
+        >
           <Text style={styles.buttonText}>View Questions</Text>
         </TouchableOpacity>
       </View>
@@ -25,7 +35,6 @@ export default ProfileItemContainer;
 
 const styles = StyleSheet.create({
   main: {
-    backgroundColor: "#414652",
     padding: 20,
     elevation: 6,
     shadowColor: "#999",
@@ -34,6 +43,12 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     borderRadius: 12,
   },
+  lightMode: {
+    backgroundColor: "#414652",
+  },
+  darkMode: {
+    backgroundColor: "#fff",
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -41,14 +56,14 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   buttonAdd: {
-    backgroundColor: "#5a9bfc", // Light blue for Add button
+    backgroundColor: "#5a9bfc",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: "center",
   },
   buttonView: {
-    backgroundColor: "#fcb045", // Orange for View button
+    backgroundColor: "#fcb045",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,

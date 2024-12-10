@@ -7,6 +7,7 @@ export const useTheme = () => useContext(Theme);
 
 export const ThemeProvider = ({ children }) => {
   const [mode, setMode] = useState(false);
+  const [title, setTitle] = useState("");
 
   const handleMode = () => {
     setMode((prev) => !prev);
@@ -17,7 +18,9 @@ export const ThemeProvider = ({ children }) => {
   };
 
   return (
-    <Theme.Provider value={{ mode, handleMode, handleDismissKeyboard }}>
+    <Theme.Provider
+      value={{ title, setTitle, mode, handleMode, handleDismissKeyboard }}
+    >
       {children}
     </Theme.Provider>
   );
