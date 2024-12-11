@@ -10,7 +10,7 @@ const ProfileItemContainer = ({ title, viewLink, onPress, handleTitle }) => {
     <View
       style={[styles.main, mode === false ? styles.darkMode : styles.lightMode]}
     >
-      <Heading textColor={mode === false ? "#414652" : "#e7e8e9"}>
+      <Heading textColor={mode === true ? "#414652" : "#e7e8e9"}>
         {title}
       </Heading>
       <View style={styles.buttonContainer}>
@@ -37,17 +37,17 @@ const styles = StyleSheet.create({
   main: {
     padding: 20,
     elevation: 6,
-    shadowColor: "#999",
+    shadowColor: "#1d212b",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.7,
     shadowRadius: 12,
     borderRadius: 12,
   },
   lightMode: {
-    backgroundColor: "#414652",
+    backgroundColor: "#fff",
   },
   darkMode: {
-    backgroundColor: "#fff",
+    backgroundColor: "#3e4450",
   },
   buttonContainer: {
     flexDirection: "row",

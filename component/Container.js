@@ -32,10 +32,9 @@ import Heading from "./Heading";
 const Container = ({ navigation }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [languageName, setLanguageName] = useState("");
-  const { handleDismissKeyboard, mode } = useTheme();
+  const { handleDismissKeyboard, mode, setImageUri, imageUri } = useTheme();
   const [languagesData, setLanguagesData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [imageUri, setImageUri] = useState(null);
   const { admin } = useUser();
 
   const handleSubmit = async () => {
@@ -91,14 +90,24 @@ const Container = ({ navigation }) => {
 
   const renderLanguageItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.languageItem}
+      style={[
+        styles.languageItem,
+        { backgroundColor: mode === true ? "#fff" : "#292f3d" },
+      ]}
       onPress={() =>
         navigation.navigate("LanguageProfile", {
           languageName: item.languageName,
         })
       }
     >
-      <Text style={styles.languageName}>{item.languageName}</Text>
+      <Text
+        style={[
+          { color: mode === false ? "#fff" : "#191c25" },
+          styles.languageName,
+        ]}
+      >
+        {item.languageName}
+      </Text>
       {item.imageUri ? (
         <Image source={{ uri: item.imageUri }} style={styles.icon} />
       ) : (
@@ -117,16 +126,30 @@ const Container = ({ navigation }) => {
           );
         }}
       >
-        <Text style={styles.deleteText}>Delete</Text>
+        <Text
+          style={[
+            styles.deleteText,
+            { color: mode === false ? "#fff" : "#191c25" },
+          ]}
+        >
+          Delete
+        </Text>
       </TouchableOpacity>
     </TouchableOpacity>
   );
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.main}>
+      <View
+        style={[
+          styles.main,
+          mode === false ? styles.darkMode : styles.lightMode,
+        ]}
+      >
         <View style={styles.flex}>
-          <Heading textColor={"#414652"}>Languages</Heading>
+          <Heading textColor={mode === false ? "#ffff" : "#1d212b"}>
+            Languages
+          </Heading>
           {/* {admin && (
             <TouchableOpacity
               style={styles.pulseButton}
@@ -234,6 +257,12 @@ const styles = StyleSheet.create({
     color: "white",
     marginBottom: 15,
   },
+  lightMode: {
+    backgroundColor: "#fff",
+  },
+  darkMode: {
+    backgroundColor: "#3e4450",
+  },
   formContainer: {
     marginBottom: 20,
   },
@@ -287,6 +316,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.5,
     elevation: 5,
+    fontWeight: "bold",
   },
   cancelButtonText: {
     color: "#fff",
@@ -299,7 +329,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#fff",
     elevation: 2,
-    shadowColor: "#999",
+    shadowColor: "#1d212b",
     shadowOffset: 7,
     shadowOpacity: 0.7,
     shadowRadius: 12,
@@ -330,14 +360,17 @@ const styles = StyleSheet.create({
     width: 150,
     padding: 10,
     borderRadius: 12,
-    backgroundColor: "#f4f4f4",
     marginRight: 10,
     alignItems: "center",
+    shadowColor: "#292f3d",
+    shadowOffset: 7,
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    marginBottom: 12,
   },
   languageName: {
     fontWeight: "bold",
     fontSize: 18,
-    color: "#333",
     marginTop: 10,
     marginBottom: 12,
   },

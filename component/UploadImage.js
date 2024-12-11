@@ -8,30 +8,10 @@ import {
   Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker"; // For Expo
+import { useTheme } from "../context/themeContext";
 
-const UploadImageComponent = ({ setImageUri, imageUri }) => {
-  const handleImageUpload = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert(
-        "Permission Denied",
-        "We need camera roll permissions to proceed."
-      );
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
-    }
-  };
-
+const UploadImageComponent = () => {
+  const { imageUri, handleImageUpload } = useTheme();
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.uploadButton} onPress={handleImageUpload}>

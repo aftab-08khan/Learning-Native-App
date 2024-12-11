@@ -26,7 +26,6 @@ const LanguageProfile = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const [imageUri, setImageUri] = useState(null);
   const navigation = useNavigation();
   const { languageName } = route.params;
   console.log(languageName, "lan");
@@ -52,7 +51,6 @@ const LanguageProfile = () => {
     setAnswer("");
     setQuestion("");
   };
-
   const handleSubmit = async () => {
     if (!answer || !question) {
       Alert.alert("Validation Error", "Please enter all fields.");
@@ -60,37 +58,34 @@ const LanguageProfile = () => {
     }
 
     try {
-      // Ensure languageName is a valid document in "languages" collection
-      const languageDocRef = doc(db, "languages", languageName);
+      const subCollectionNameMap = {
+        "Create Theory Questions": "CreateTheoryQuestions",
+        "Create Coding Questions": "CreateCodingQuestions",
+        "Create Console Log Questions": "CreateConsoleLogQuestions",
+      };
 
-      // Dynamically determine the subcollection name based on the title
-      let subCollectionName = "";
-      if (title === "Create Theory Questions") {
-        subCollectionName = "CreateTheoryQuestions";
-      } else if (title === "Create Coding Questions") {
-        subCollectionName = "CreateCodingQuestions";
-      } else if (title === "Create Console Log Questions") {
-        subCollectionName = "CreateConsoleLogQuestions";
-      }
-
-      // Check for a valid subcollection name and proceed
-      if (subCollectionName) {
-        // Add the data to the subcollection under the specific language document
-        const subCollectionRef = collection(languageDocRef, subCollectionName);
-
-        await addDoc(subCollectionRef, {
-          question: question.trim(),
-          answer: answer.trim(),
-          createdAt: new Date(),
-        });
-
-        Alert.alert("Success", "Your question has been added successfully!");
-        setIsVisible(false);
-        setAnswer("");
-        setQuestion("");
-      } else {
+      const subCollectionName = subCollectionNameMap[title];
+      if (!subCollectionName) {
         throw new Error("Invalid question type.");
       }
+
+      const subCollectionRef = collection(
+        db,
+        "languages",
+        languageName,
+        subCollectionName
+      );
+
+      await addDoc(subCollectionRef, {
+        question: question.trim(),
+        answer: answer.trim(),
+        createdAt: new Date(),
+      });
+
+      Alert.alert("Success", "Your question has been added successfully!");
+      setIsVisible(false);
+      setAnswer("");
+      setQuestion("");
     } catch (error) {
       Alert.alert("Error", error.message || "An error occurred.");
     }
@@ -98,7 +93,7 @@ const LanguageProfile = () => {
 
   const handleTitle = (value) => {
     setTitle(value);
-    navigation.navigate("QuestionAnswer");
+    navigation.navigate("QuestionAnswer", { languageName: languageName });
   };
 
   return (
@@ -131,6 +126,7 @@ const LanguageProfile = () => {
               title={item.title}
               viewLink={item.viewLink}
               handleTitle={handleTitle}
+              languageName={languageName}
             />
           );
         })}
@@ -169,10 +165,7 @@ const LanguageProfile = () => {
               </View>
               {title === "Create Console Log Questions" ||
               title === "Create Coding Questions" ? (
-                <UploadImageComponent
-                  setImageUri={setImageUri}
-                  imageUri={imageUri}
-                />
+                <UploadImageComponent />
               ) : null}
 
               <TouchableOpacity
@@ -200,7 +193,7 @@ export default LanguageProfile;
 
 const styles = StyleSheet.create({
   lightMode: {
-    backgroundColor: "#414652",
+    backgroundColor: "#292f3d",
   },
   darkMode: {
     backgroundColor: "#fff",
