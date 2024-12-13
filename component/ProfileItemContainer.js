@@ -2,10 +2,11 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Heading from "./Heading";
 import { useTheme } from "../context/themeContext";
+import { useUser } from "../context/UserContext";
 
 const ProfileItemContainer = ({ title, viewLink, onPress, handleTitle }) => {
   const { mode } = useTheme();
-
+  const { admin } = useUser();
   return (
     <View
       style={[styles.main, mode === false ? styles.darkMode : styles.lightMode]}
@@ -14,14 +15,18 @@ const ProfileItemContainer = ({ title, viewLink, onPress, handleTitle }) => {
         {title}
       </Heading>
       <View style={styles.buttonContainer}>
+        {admin === true ? (
+          <TouchableOpacity
+            style={styles.buttonAdd}
+            onPress={() => onPress(true, title)}
+          >
+            <Text style={styles.buttonText}>Add Questions</Text>
+          </TouchableOpacity>
+        ) : (
+          ""
+        )}
         <TouchableOpacity
-          style={styles.buttonAdd}
-          onPress={() => onPress(true, title)}
-        >
-          <Text style={styles.buttonText}>Add Questions</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.buttonView}
+          style={[styles.buttonView, { width: admin === false ? "100%" : "" }]}
           onPress={() => handleTitle(title)}
         >
           <Text style={styles.buttonText}>View Questions</Text>
@@ -42,6 +47,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.7,
     shadowRadius: 12,
     borderRadius: 12,
+    width: "100%",
   },
   lightMode: {
     backgroundColor: "#fff",
@@ -54,6 +60,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 20,
     gap: 12,
+    width: "100%",
   },
   buttonAdd: {
     backgroundColor: "#5a9bfc",

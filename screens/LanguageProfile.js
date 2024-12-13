@@ -229,6 +229,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 60,
     marginTop: 20,
+    paddingHorizontal: 30,
   },
   modalBackdrop: {
     flex: 1,

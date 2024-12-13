@@ -20,6 +20,7 @@ import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { Ionicons } from "@expo/vector-icons";
 import UploadImageComponent from "../component/UploadImage";
+import { useUser } from "../context/UserContext";
 const QuestionsAnswer = () => {
   const route = useRoute();
   const { languageName } = route.params;
@@ -27,6 +28,7 @@ const QuestionsAnswer = () => {
   const [editingQuestion, setEditingQuestion] = useState("");
   const [editingAnswer, setEditingAnswer] = useState("");
   const navigation = useNavigation();
+  const { admin } = useUser();
   const { title, mode, setImageUri, imageUri } = useTheme();
   const [questionAnswerData, setQuestionAnswerData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -195,7 +197,7 @@ const QuestionsAnswer = () => {
       <View style={[styles.cards]}>
         <FlatList
           data={questionAnswerData}
-          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => (
             <View
@@ -215,16 +217,20 @@ const QuestionsAnswer = () => {
                 >
                   Question {index + 1}
                 </Text>
-                <View style={{ flexDirection: "row", gap: 12 }}>
-                  <TouchableOpacity
-                    onPress={() => handleEditmModalOpen(true, item)}
-                  >
-                    <Ionicons name="create" size={20} color="green" />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => confirmDelete(item.id)}>
-                    <Ionicons name="trash-outline" size={20} color="red" />
-                  </TouchableOpacity>
-                </View>
+                {admin === true ? (
+                  <View style={{ flexDirection: "row", gap: 12 }}>
+                    <TouchableOpacity
+                      onPress={() => handleEditmModalOpen(true, item)}
+                    >
+                      <Ionicons name="create" size={20} color="green" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => confirmDelete(item.id)}>
+                      <Ionicons name="trash-outline" size={20} color="red" />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  ""
+                )}
               </View>
               <Text
                 style={[
@@ -379,6 +385,8 @@ const styles = StyleSheet.create({
   cards: {
     paddingHorizontal: 20,
     marginTop: 12,
+    marginBottom: 80,
+    overflow: "hidden",
   },
   light: {
     backgroundColor: "#eaeaec",

@@ -38,7 +38,7 @@ const Container = ({ navigation }) => {
   const { admin } = useUser();
 
   const handleSubmit = async () => {
-    if (!languageName.trim() || !imageUri) {
+    if (!languageName.trim()) {
       Alert.alert();
       return;
     }
@@ -111,7 +111,13 @@ const Container = ({ navigation }) => {
       {item.imageUri ? (
         <Image source={{ uri: item.imageUri }} style={styles.icon} />
       ) : (
-        <Text>No Image</Text>
+        // If no imageUri, show an icon or a placeholder message
+        <Ionicons
+          name="ios-language" // You can use any icon that fits your design
+          size={40}
+          color={mode === true ? "#191c25" : "#fff"}
+          style={styles.icon}
+        />
       )}
       <TouchableOpacity
         style={styles.deleteButton}
@@ -304,6 +310,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  icon: { width: 20, height: 20 },
   cancelButton: {
     width: "100%",
     backgroundColor: "#FC5A5A",

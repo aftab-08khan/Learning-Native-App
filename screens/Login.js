@@ -1,28 +1,26 @@
-import {
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Text,
   TextInput,
   TouchableOpacity,
   View,
   StyleSheet,
-  Image,
-  Keyboard,
+  SafeAreaView,
+  KeyboardAvoidingView,
   TouchableWithoutFeedback,
+  Keyboard,
   Alert,
 } from "react-native";
 import { auth } from "../firebase.config";
-import { useUser } from "../context/UserContext";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useTheme } from "../context/themeContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const Login = ({ navigation }) => {
+  const { mode } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { validateCredentials } = useUser();
 
   const handleInputChange = (setter) => (value) => {
     setter(value);
@@ -32,83 +30,106 @@ const Login = ({ navigation }) => {
   };
 
   const handleLogin = () => {
-    setError(null);
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        if (user.emailVerified) {
-          navigation.navigate("Home");
-        } else {
-          Alert.alert("Invalid Credentials Try Again");
-        }
+      .then(() => {
+        navigation.navigate("Home"); // Redirect to Home page after successful login
       })
       .catch((error) => {
-        console.error("Login Error: ", error.message); // Debug log
-        setError(error.message);
+        const errorMsg = error.message;
+        setError(errorMsg); // Set error message from Firebase
       });
-  };
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        validateCredentials(user.email);
-      }
-    });
-    return unsubscribe;
-  }, []);
-  const handleDismissKeyboard = () => {
-    Keyboard.dismiss();
   };
 
   return (
-    <TouchableWithoutFeedback onPress={handleDismissKeyboard}>
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.homeButton}
-          onPress={() => navigation.navigate("Main")}
-        >
-          <Text style={styles.homeButtonText}>Go to Home</Text>
-        </TouchableOpacity>
-        <Image
-          source={{
-            uri: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-          }}
-          style={styles.logo}
-        />
-        <Text style={styles.title}>Welcome Back!</Text>
-        <Text style={styles.subtitle}>Login to your account</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          onChangeText={handleInputChange(setEmail)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your password"
-          secureTextEntry
-          autoCapitalize="none"
-          onChangeText={handleInputChange(setPassword)}
-        />
-
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account?</Text>
-          <TouchableOpacity>
-            <Text
-              style={styles.footerLink}
-              onPress={() => navigation.navigate("SignUp")}
-            >
-              Sign Up
-            </Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          mode === false ? styles.darkMode : styles.lightMode,
+        ]}
+      >
+        <View style={styles.container}>
+          <TouchableOpacity
+            style={[
+              styles.backButton,
+              { backgroundColor: mode ? "#e0e0e0" : "#4e535f" },
+            ]}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={24}
+              color={mode === true ? "#000" : "#fff"}
+            />
           </TouchableOpacity>
+          <View style={styles.form}>
+            <Text style={[styles.title, { color: mode ? "#333" : "#e7e8e9" }]}>
+              Login
+            </Text>
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor={mode ? "#666" : "#c2c2c2"}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: mode ? "#fff" : "#4e535f",
+                  color: mode ? "#000" : "#fff",
+                },
+              ]}
+              value={email}
+              onChangeText={handleInputChange(setEmail)}
+            />
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor={mode ? "#666" : "#c2c2c2"}
+              secureTextEntry
+              style={[
+                styles.input,
+                {
+                  backgroundColor: mode ? "#fff" : "#4e535f",
+                  color: mode ? "#000" : "#fff",
+                },
+              ]}
+              value={password}
+              onChangeText={handleInputChange(setPassword)}
+            />
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { backgroundColor: mode ? "#007bff" : "#5a9bfc" },
+              ]}
+              onPress={handleLogin}
+            >
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+            <View style={styles.footer}>
+              <Text
+                style={[
+                  styles.footerText,
+                  { color: mode ? "#333" : "#e7e8e9" },
+                ]}
+              >
+                Don't have an account?{" "}
+              </Text>
+              <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+                <Text
+                  style={[styles.link, { color: mode ? "#007bff" : "#5a9bfc" }]}
+                >
+                  Sign Up
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate("Main")}>
+                <Text
+                  style={[styles.link, { color: mode ? "#007bff" : "#5a9bfc" }]}
+                >
+                  / Home
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-      </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 };
@@ -116,81 +137,86 @@ const Login = ({ navigation }) => {
 export default Login;
 
 const styles = StyleSheet.create({
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    padding: 10,
+    borderRadius: 50,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f5f5f5",
+    width: "100%",
   },
-  logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
-    borderRadius: 50,
+  lightMode: {
+    backgroundColor: "#f7f7f7",
+  },
+  darkMode: {
+    backgroundColor: "#292f3d",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#333",
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 30,
+    marginBottom: 20,
+    textAlign: "center",
   },
   input: {
     width: "100%",
     height: 50,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingLeft: 15,
     marginBottom: 15,
-    backgroundColor: "#fff",
+    borderRadius: 10,
+    paddingHorizontal: 15,
     fontSize: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   button: {
     width: "100%",
     height: 50,
-    backgroundColor: "#007bff",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 8,
-    marginBottom: 15,
+    borderRadius: 10,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
+  form: {
+    width: "100%",
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    backgroundColor: (mode) => (mode === true ? "#fff" : "#3e4450"),
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  error: {
+    color: "red",
+    marginBottom: 15,
+  },
   footer: {
-    flexDirection: "row",
     marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "center",
   },
   footerText: {
-    color: "#666",
+    fontSize: 16,
   },
-  footerLink: {
-    color: "#007bff",
-    fontWeight: "bold",
-    marginLeft: 5,
-  },
-  homeButton: {
-    marginTop: 20,
-    backgroundColor: "#28a745", // Green color
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 8,
-    position: "absolute",
-    top: 0,
-    left: 30,
-    padding: 12,
-  },
-  homeButtonText: {
-    color: "#fff",
-    fontSize: 14,
+  link: {
+    fontSize: 16,
     fontWeight: "bold",
   },
 });
