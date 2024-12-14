@@ -28,7 +28,6 @@ const LanguageProfile = () => {
   const [answer, setAnswer] = useState("");
   const navigation = useNavigation();
   const { languageName } = route.params;
-  console.log(languageName, "lan");
 
   const questionsData = [
     {

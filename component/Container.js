@@ -28,6 +28,7 @@ import { db } from "../firebase.config";
 import UploadImageComponent from "./UploadImage";
 import { useUser } from "../context/UserContext";
 import Heading from "./Heading";
+import { Ionicons } from "@expo/vector-icons";
 
 const Container = ({ navigation }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -88,61 +89,69 @@ const Container = ({ navigation }) => {
     fetchLanguagesData();
   }, []);
 
-  const renderLanguageItem = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.languageItem,
-        { backgroundColor: mode === true ? "#fff" : "#292f3d" },
-      ]}
-      onPress={() =>
-        navigation.navigate("LanguageProfile", {
-          languageName: item.languageName,
-        })
-      }
-    >
-      <Text
-        style={[
-          { color: mode === false ? "#fff" : "#191c25" },
-          styles.languageName,
-        ]}
-      >
-        {item.languageName}
-      </Text>
-      {item.imageUri ? (
-        <Image source={{ uri: item.imageUri }} style={styles.icon} />
-      ) : (
-        // If no imageUri, show an icon or a placeholder message
-        <Ionicons
-          name="ios-language" // You can use any icon that fits your design
-          size={40}
-          color={mode === true ? "#191c25" : "#fff"}
-          style={styles.icon}
-        />
-      )}
+  const renderLanguageItem = ({ item }) =>
+    item ? (
       <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => {
-          Alert.alert(
-            "Confirm Delete",
-            "Are you sure you want to delete this language?",
-            [
-              { text: "Cancel", style: "cancel" },
-              { text: "Delete", onPress: () => handleDelete(item.id) },
-            ]
-          );
-        }}
+        style={[
+          styles.languageItem,
+          { backgroundColor: mode === true ? "#fff" : "#292f3d" },
+        ]}
+        onPress={() =>
+          navigation.navigate("LanguageProfile", {
+            languageName: item.languageName,
+          })
+        }
       >
         <Text
           style={[
-            styles.deleteText,
             { color: mode === false ? "#fff" : "#191c25" },
+            styles.languageName,
           ]}
         >
-          Delete
+          {item.languageName}
         </Text>
+        {item.imageUri ? (
+          <Image source={{ uri: item.imageUri }} style={styles.icon} />
+        ) : (
+          <View>
+            <Ionicons
+              name="ios-language"
+              size={40}
+              color={mode === true ? "#191c25" : "#fff"}
+              style={styles.icon}
+            />
+          </View>
+        )}
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => {
+            Alert.alert(
+              "Confirm Delete",
+              "Are you sure you want to delete this language?",
+              [
+                { text: "Cancel", style: "cancel" },
+                { text: "Delete", onPress: () => handleDelete(item.id) },
+              ]
+            );
+          }}
+        >
+          {admin === true ? (
+            <Text
+              style={[
+                styles.deleteText,
+                { color: mode === false ? "#fff" : "#191c25" },
+              ]}
+            >
+              Delete
+            </Text>
+          ) : (
+            ""
+          )}
+        </TouchableOpacity>
       </TouchableOpacity>
-    </TouchableOpacity>
-  );
+    ) : (
+      <Text>Add a new Data</Text>
+    );
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

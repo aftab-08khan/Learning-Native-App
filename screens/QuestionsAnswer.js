@@ -16,7 +16,13 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "../context/themeContext";
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase.config";
 import { Ionicons } from "@expo/vector-icons";
 import UploadImageComponent from "../component/UploadImage";
@@ -28,6 +34,7 @@ const QuestionsAnswer = () => {
   const [editingQuestion, setEditingQuestion] = useState("");
   const [editingAnswer, setEditingAnswer] = useState("");
   const navigation = useNavigation();
+  const [editingQuestionsId, setEditingQuestionId] = useState(null);
   const { admin } = useUser();
   const { title, mode, setImageUri, imageUri } = useTheme();
   const [questionAnswerData, setQuestionAnswerData] = useState([]);
@@ -72,16 +79,64 @@ const QuestionsAnswer = () => {
   const handleEditmModalOpen = (value, data) => {
     setEditingAnswer(data.answer);
     setEditingQuestion(data.question);
+    setEditingQuestionId(data.id);
     setIsVisible(value);
   };
+
   const handleModalClose = () => {
     setIsVisible(false);
   };
 
   useEffect(() => {
     fetchQuestionAnswer();
-  }, []); // Only run once when the component mounts
-  const handleEditFormSubmit = () => {};
+  }, []);
+  const handleEditFormSubmit = async () => {
+    if (!editingAnswer || !editingQuestion) {
+      Alert.alert("Error", "Both question and answer fields are required.");
+      return;
+    }
+    const subCollectionNameMap = {
+      "Create Theory Questions": "CreateTheoryQuestions",
+      "Create Coding Questions": "CreateCodingQuestions",
+      "Create Console Log Questions": "CreateConsoleLogQuestions",
+    };
+    const subCollectionName = subCollectionNameMap[title];
+
+    try {
+      const docRef = doc(
+        db,
+        "languages",
+        languageName,
+        subCollectionName,
+        editingQuestionsId
+      );
+      await updateDoc(docRef, {
+        question: editingQuestion, // Use the string value
+        answer: editingAnswer,
+        ...(imageUri ? { image: imageUri } : {}),
+      });
+
+      setQuestionAnswerData((prev) =>
+        prev.map((item) =>
+          item.id === editingQuestionsId
+            ? {
+                ...item,
+                question: editingQuestion,
+                answer: editingAnswer,
+                ...(imageUri ? { image: imageUri } : {}),
+              }
+            : item
+        )
+      );
+      Alert.alert("Success", "Question and answer updated successfully!");
+      handleModalClose();
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        error.message || "Failed to update question and answer."
+      );
+    }
+  };
 
   const confirmDelete = (id) => {
     Alert.alert(
@@ -90,21 +145,19 @@ const QuestionsAnswer = () => {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Delete canceled"),
+          onPress: () => "Delete canceled",
           style: "cancel",
         },
         {
           text: "Delete",
           onPress: () => handleDelete(id),
-          style: "destructive", // Makes the button visually stand out (red on iOS)
+          style: "destructive",
         },
       ]
     );
   };
 
   const handleDelete = async (id) => {
-    console.log(id, "id");
-
     try {
       const subCollectionNameMap = {
         "Create Theory Questions": "CreateTheoryQuestions",
@@ -149,7 +202,6 @@ const QuestionsAnswer = () => {
       </SafeAreaView>
     );
   }
-
   if (questionAnswerData.length === 0) {
     return (
       <SafeAreaView
@@ -158,14 +210,21 @@ const QuestionsAnswer = () => {
           mode === false ? styles.darkContainer : styles.lightContainer,
         ]}
       >
-        <Text
-          style={[
-            styles.headerTitle,
-            mode === false ? styles.darkText : styles.lightText,
-          ]}
+        <View
+          style={{
+            flex: 1,
+            paddingTop: 60,
+          }}
         >
-          No questions available.
-        </Text>
+          <Text
+            style={[
+              styles.headerTitle,
+              mode === false ? styles.darkText : styles.lightText,
+            ]}
+          >
+            No questions available.
+          </Text>
+        </View>
       </SafeAreaView>
     );
   }
@@ -238,7 +297,7 @@ const QuestionsAnswer = () => {
                   mode === false ? styles.darkText : styles.lightText,
                 ]}
               >
-                {item.question}?
+                {item.question}
               </Text>
               <View style={styles.answerContainer}>
                 <Text style={styles.answer}>{item.answer}</Text>
@@ -319,11 +378,13 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    
   },
   loaderContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingTop: 80,
   },
   lightContainer: {
     backgroundColor: "#fff",

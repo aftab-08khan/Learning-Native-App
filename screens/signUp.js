@@ -43,7 +43,7 @@ const SignUp = ({ navigation }) => {
             setEmailSent(true);
           })
           .catch((error) => {
-            setError("Email not verified");
+            setError("Email not verified", error);
           });
         setEmail("");
         setPassword("");

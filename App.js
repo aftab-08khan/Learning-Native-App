@@ -11,19 +11,17 @@ import { ThemeProvider } from "./context/themeContext";
 import { UserContextProvider } from "./context/UserContext";
 import LanguageProfile from "./screens/LanguageProfile";
 import QuestionsAnswer from "./screens/QuestionsAnswer";
-import LottieView from "lottie-react-native"; // Import the LottieView component
+import LottieView from "lottie-react-native";
 
 export default function App() {
   const Stack = createStackNavigator();
 
-  // State to control loading animation
   const [loading, setLoading] = useState(true);
 
-  // Simulate loading with a timeout (or replace with your actual loading logic)
   useEffect(() => {
     setTimeout(() => {
-      setLoading(false); // After loading, navigate to the main screen
-    }, 3000); // 3 seconds of loading animation
+      setLoading(false);
+    }, 5000);
   }, []);
 
   return (
@@ -31,10 +29,9 @@ export default function App() {
       <ThemeProvider>
         <View style={{ flex: 1 }}>
           {loading ? (
-            // Loader Screen with Lottie animation
             <View style={styles.loaderContainer}>
               <LottieView
-                source={require("./assets/animation2.json")} // Specify your animation path here
+                source={require("./assets/animation2.json")}
                 autoPlay
                 loop
                 style={styles.lottieStyle}
@@ -42,7 +39,6 @@ export default function App() {
               <Text style={styles.loadingText}>Loading...</Text>
             </View>
           ) : (
-            // Main app content once loading is done
             <NavigationContainer>
               <Stack.Navigator initialRouteName="Main">
                 <Stack.Screen
@@ -90,7 +86,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#292f3d",
   },
   lottieStyle: {
     width: 200,
