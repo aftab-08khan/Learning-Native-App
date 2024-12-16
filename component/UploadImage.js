@@ -9,12 +9,14 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker"; // For Expo
 import { useTheme } from "../context/themeContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const UploadImageComponent = () => {
   const { imageUri, handleImageUpload } = useTheme();
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.uploadButton} onPress={handleImageUpload}>
+        <Ionicons name="images-outline" size={30} color="#fff" />
         <Text style={styles.uploadButtonText}>Upload Image</Text>
       </TouchableOpacity>
 
@@ -33,14 +35,17 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   uploadButton: {
-    backgroundColor: "#4CAF50",
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: "#5a9bfc",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
+    gap: 20,
   },
   uploadButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 18,
   },
   imagePreview: {
     width: "100%",

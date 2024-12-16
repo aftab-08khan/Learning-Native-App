@@ -6,15 +6,19 @@ import {
   Image,
   Alert,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { useTheme } from "../context/themeContext";
 import Container from "../component/Container";
 import { SafeAreaView } from "react-native";
-// import InterviewQsContainer from "../component/InterviewQsContainer";
+
 const Home = ({ navigation }) => {
   const [userEmail, setUserEmail] = useState(null);
   const { mode, handleMode } = useTheme();
+  const [screenWidth, setScreenWidth] = useState(
+    Dimensions.get("window").width
+  );
 
   useEffect(() => {
     const auth = getAuth();
@@ -25,7 +29,16 @@ const Home = ({ navigation }) => {
         setUserEmail(null);
       }
     });
-    return unsubscribe;
+
+    // Listen for dimension changes
+    const subscription = Dimensions.addEventListener("change", ({ window }) => {
+      setScreenWidth(window.width);
+    });
+
+    return () => {
+      unsubscribe();
+      subscription.remove();
+    };
   }, []);
 
   const handleLogout = () => {
@@ -37,6 +50,9 @@ const Home = ({ navigation }) => {
       .catch((error) => Alert.alert("Error", error.message));
   };
 
+  // Dynamic styles based on screen size
+  const isSmallScreen = screenWidth < 360;
+
   return (
     <SafeAreaView
       style={[
@@ -44,22 +60,22 @@ const Home = ({ navigation }) => {
         mode === false ? styles.darkContainer : styles.lightContainer,
       ]}
     >
-      <View style={styles.container}>
-        <View style={[styles.header]}>
+      <View
+        style={[styles.container, isSmallScreen && styles.smallScreenContainer]}
+      >
+        <View style={[styles.header, isSmallScreen && styles.smallHeader]}>
           <Image
             source={{
               uri: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
             }}
-            style={styles.profileImage}
+            style={[
+              styles.profileImage,
+              isSmallScreen && styles.smallProfileImage,
+            ]}
           />
           <View style={styles.welcomeContainer}>
             <Text style={[styles.greetingText]}>Welcome</Text>
-            <Text
-              style={[
-                styles.welcomeText,
-                // mode === false ? styles.lightText : styles.darkText,
-              ]}
-            >
+            <Text style={[styles.welcomeText]}>
               {userEmail ? userEmail : "Guest"}
             </Text>
           </View>
@@ -87,7 +103,6 @@ const Home = ({ navigation }) => {
         >
           <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
-        {/* <InterviewQsContainer /> */}
         <Container navigation={navigation} />
       </View>
     </SafeAreaView>
@@ -102,6 +117,9 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     padding: 20,
+  },
+  smallScreenContainer: {
+    padding: 10,
   },
   lightContainer: {
     backgroundColor: "#fff",
@@ -123,10 +141,17 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
+  smallHeader: {
+    padding: 5,
+  },
   profileImage: {
     width: 60,
     height: 60,
     borderRadius: 30,
+  },
+  smallProfileImage: {
+    width: 40,
+    height: 40,
   },
   welcomeContainer: {
     flex: 1,
@@ -142,12 +167,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginTop: 5,
     color: "#000",
-  },
-  lightText: {
-    color: "#333",
-  },
-  darkText: {
-    color: "#fff",
   },
   themeToggleButton: {
     paddingVertical: 8,

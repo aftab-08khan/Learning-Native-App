@@ -68,7 +68,7 @@ const SignUp = ({ navigation }) => {
               styles.backButton,
               { backgroundColor: mode ? "#e0e0e0" : "#4e535f" },
             ]}
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.goBack("Main")}
           >
             <Ionicons
               name="arrow-back"

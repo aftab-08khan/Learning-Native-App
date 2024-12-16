@@ -40,7 +40,7 @@ export default function App() {
             </View>
           ) : (
             <NavigationContainer>
-              <Stack.Navigator initialRouteName="Main">
+              <Stack.Navigator initialRouteName="Home">
                 <Stack.Screen
                   name="Main"
                   component={Main}

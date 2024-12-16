@@ -210,9 +210,26 @@ const QuestionsAnswer = () => {
           mode === false ? styles.darkContainer : styles.lightContainer,
         ]}
       >
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack("LanguageProfile")}
+          >
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </TouchableOpacity>
+          <Text
+            style={[
+              styles.headerTitle,
+              mode === false ? styles.darkText : styles.lightText,
+            ]}
+          >
+            {title}
+          </Text>
+        </View>
         <View
           style={{
             flex: 1,
+            justifyContent: "center",
             paddingTop: 60,
           }}
         >
@@ -239,7 +256,7 @@ const QuestionsAnswer = () => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.goBack("LanguageProfile")}
         >
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
@@ -370,78 +387,50 @@ const QuestionsAnswer = () => {
 };
 
 const styles = StyleSheet.create({
-  lightText: {
-    color: "#414652",
-  },
-  darkText: {
-    color: "#fff",
-  },
   container: {
     flex: 1,
-    
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingTop: 80,
-  },
-  lightContainer: {
-    backgroundColor: "#fff",
-  },
-  darkContainer: {
-    backgroundColor: "#292f3d",
+    padding: width < 600 ? 10 : 20, // Adjust padding for smaller screens
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-  },
-  loader: {
-    marginBottom: 20, // Adds space between the loader and the text
-  },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "white",
-    padding: 12,
-    borderRadius: 32,
+    paddingHorizontal: width < 600 ? 10 : 20,
+    height: height * 0.1, // Dynamic height
   },
   headerTitle: {
-    flex: 1,
-    fontSize: 20,
+    fontSize: width < 600 ? 18 : 24, // Adjust font size for smaller screens
     fontWeight: "bold",
-    textAlign: "center",
+  },
+  darkContainer: {
+    backgroundColor: "#121212",
+  },
+  lightContainer: {
+    backgroundColor: "#FFFFFF",
+  },
+  backButton: {
+    padding: width < 600 ? 5 : 10,
   },
   card: {
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    padding: 16,
-    marginVertical: 8,
-    elevation: 2,
+    margin: width < 600 ? 5 : 10,
+    padding: width < 600 ? 10 : 20,
+    borderRadius: 10,
+    backgroundColor: mode === false ? "#333" : "#FFF",
+    // More styles...
   },
   question: {
-    fontSize: 16,
+    fontSize: width < 600 ? 14 : 18, // Adjust font size
     fontWeight: "bold",
-    marginBottom: 8,
   },
   answerContainer: {
-    backgroundColor: "#000",
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    // alignItems: "center",
-
-    padding: 12,
-    borderRadius: 4,
-    gap: 6,
+    marginTop: width < 600 ? 5 : 10,
   },
   answer: {
-    fontSize: 14,
-    color: "#fff",
-    flex: 1,
-    lineHeight: 20,
+    fontSize: width < 600 ? 12 : 16,
+    color: "#555",
   },
   cards: {
     paddingHorizontal: 20,

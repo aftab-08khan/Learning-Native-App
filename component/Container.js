@@ -113,41 +113,45 @@ const Container = ({ navigation }) => {
         {item.imageUri ? (
           <Image source={{ uri: item.imageUri }} style={styles.icon} />
         ) : (
-          <View>
+          <View style={{ justifyContent: "center", alignItems: "center" }}>
             <Ionicons
-              name="ios-language"
-              size={40}
+              name="folder-outline"
+              size={80}
               color={mode === true ? "#191c25" : "#fff"}
-              style={styles.icon}
+              // style={styles.icon}
             />
           </View>
         )}
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => {
-            Alert.alert(
-              "Confirm Delete",
-              "Are you sure you want to delete this language?",
-              [
-                { text: "Cancel", style: "cancel" },
-                { text: "Delete", onPress: () => handleDelete(item.id) },
-              ]
-            );
-          }}
-        >
-          {admin === true ? (
-            <Text
-              style={[
-                styles.deleteText,
-                { color: mode === false ? "#fff" : "#191c25" },
-              ]}
-            >
-              Delete
-            </Text>
-          ) : (
-            ""
-          )}
-        </TouchableOpacity>
+        {admin === true ? (
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => {
+              Alert.alert(
+                "Confirm Delete",
+                "Are you sure you want to delete this language?",
+                [
+                  { text: "Cancel", style: "cancel" },
+                  { text: "Delete", onPress: () => handleDelete(item.id) },
+                ]
+              );
+            }}
+          >
+            {admin === true ? (
+              <Text
+                style={[
+                  styles.deleteText,
+                  { color: mode === false ? "#fff" : "#191c25" },
+                ]}
+              >
+                Delete
+              </Text>
+            ) : (
+              ""
+            )}
+          </TouchableOpacity>
+        ) : (
+          ""
+        )}
       </TouchableOpacity>
     ) : (
       <Text>Add a new Data</Text>

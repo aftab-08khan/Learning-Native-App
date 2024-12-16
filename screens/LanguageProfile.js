@@ -10,15 +10,18 @@ import {
   Platform,
   Alert,
   SafeAreaView,
+  Dimensions,
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import ProfileItemContainer from "../component/ProfileItemContainer";
 import Heading from "../component/Heading";
 import { useTheme } from "../context/themeContext";
-import { addDoc, collection, doc } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase.config";
 import UploadImageComponent from "../component/UploadImage";
+
+const { width } = Dimensions.get("window");
 
 const LanguageProfile = () => {
   const route = useRoute();
@@ -50,6 +53,7 @@ const LanguageProfile = () => {
     setAnswer("");
     setQuestion("");
   };
+
   const handleSubmit = async () => {
     if (!answer || !question) {
       Alert.alert("Validation Error", "Please enter all fields.");
@@ -102,7 +106,7 @@ const LanguageProfile = () => {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.goBack("Home")}
         >
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
@@ -140,7 +144,12 @@ const LanguageProfile = () => {
             style={styles.modalBackdrop}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <View style={styles.modalContent}>
+            <View
+              style={[
+                styles.modalContent,
+                width < 400 && styles.modalContentSmall,
+              ]}
+            >
               <Text style={styles.modalHeading}>Enter Question and Answer</Text>
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>Please Enter a Question:</Text>
@@ -247,6 +256,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 8,
+  },
+  modalContentSmall: {
+    width: "95%",
+    padding: 15,
   },
   modalHeading: {
     fontSize: 20,
