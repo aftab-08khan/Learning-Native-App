@@ -63,10 +63,7 @@ const QuestionsAnswer = () => {
 
       setQuestionAnswerData(allQuestions);
     } catch (error) {
-      Alert.alert(
-        "Error",
-        `An error occurred while fetching data: ${error.message}`
-      );
+      Alert.alert("Error");
     } finally {
       setLoading(false);
     }
@@ -385,52 +382,80 @@ const QuestionsAnswer = () => {
     </SafeAreaView>
   );
 };
+export default QuestionsAnswer;
 
 const styles = StyleSheet.create({
+  lightText: {
+    color: "#414652",
+  },
+  darkText: {
+    color: "#fff",
+  },
   container: {
     flex: 1,
-    padding: width < 600 ? 10 : 20, // Adjust padding for smaller screens
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 80,
+  },
+  lightContainer: {
+    backgroundColor: "#fff",
+  },
+  darkContainer: {
+    backgroundColor: "#292f3d",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: width < 600 ? 10 : 20,
-    height: height * 0.1, // Dynamic height
+    paddingVertical: 15,
+    paddingHorizontal: 20,
   },
-  headerTitle: {
-    fontSize: width < 600 ? 18 : 24, // Adjust font size for smaller screens
-    fontWeight: "bold",
-  },
-  darkContainer: {
-    backgroundColor: "#121212",
-  },
-  lightContainer: {
-    backgroundColor: "#FFFFFF",
+  loader: {
+    marginBottom: 20, // Adds space between the loader and the text
   },
   backButton: {
-    padding: width < 600 ? 5 : 10,
-  },
-  card: {
-    margin: width < 600 ? 5 : 10,
-    padding: width < 600 ? 10 : 20,
-    borderRadius: 10,
-    backgroundColor: mode === false ? "#333" : "#FFF",
-    // More styles...
-  },
-  question: {
-    fontSize: width < 600 ? 14 : 18, // Adjust font size
-    fontWeight: "bold",
-  },
-  answerContainer: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "white",
+    padding: 12,
+    borderRadius: 32,
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  card: {
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    padding: 16,
+    marginVertical: 8,
+    elevation: 2,
+  },
+  question: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  answerContainer: {
+    backgroundColor: "#000",
+    flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: width < 600 ? 5 : 10,
+    // alignItems: "center",
+
+    padding: 12,
+    borderRadius: 4,
+    gap: 6,
   },
   answer: {
-    fontSize: width < 600 ? 12 : 16,
-    color: "#555",
+    fontSize: 14,
+    color: "#fff",
+    flex: 1,
+    lineHeight: 20,
   },
   cards: {
     paddingHorizontal: 20,
@@ -527,5 +552,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-export default QuestionsAnswer;

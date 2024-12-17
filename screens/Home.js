@@ -16,9 +16,9 @@ import { SafeAreaView } from "react-native";
 const Home = ({ navigation }) => {
   const [userEmail, setUserEmail] = useState(null);
   const { mode, handleMode } = useTheme();
-  const [screenWidth, setScreenWidth] = useState(
-    Dimensions.get("window").width
-  );
+  // const [screenWidth, setScreenWidth] = useState(
+  //   Dimensions.get("window").width
+  // );
 
   useEffect(() => {
     const auth = getAuth();
@@ -31,9 +31,9 @@ const Home = ({ navigation }) => {
     });
 
     // Listen for dimension changes
-    const subscription = Dimensions.addEventListener("change", ({ window }) => {
-      setScreenWidth(window.width);
-    });
+    // const subscription = Dimensions.addEventListener("change", ({ window }) => {
+    //   setScreenWidth(window.width);
+    // });
 
     return () => {
       unsubscribe();
@@ -51,7 +51,7 @@ const Home = ({ navigation }) => {
   };
 
   // Dynamic styles based on screen size
-  const isSmallScreen = screenWidth < 360;
+  // const isSmallScreen = screenWidth < 360;
 
   return (
     <SafeAreaView
@@ -60,17 +60,15 @@ const Home = ({ navigation }) => {
         mode === false ? styles.darkContainer : styles.lightContainer,
       ]}
     >
-      <View
-        style={[styles.container, isSmallScreen && styles.smallScreenContainer]}
-      >
-        <View style={[styles.header, isSmallScreen && styles.smallHeader]}>
+      <View style={[styles.container]}>
+        <View style={[styles.header]}>
           <Image
             source={{
               uri: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
             }}
             style={[
               styles.profileImage,
-              isSmallScreen && styles.smallProfileImage,
+              // isSmallScreen && styles.smallProfileImage,
             ]}
           />
           <View style={styles.welcomeContainer}>

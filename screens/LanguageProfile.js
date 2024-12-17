@@ -21,7 +21,8 @@ import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase.config";
 import UploadImageComponent from "../component/UploadImage";
 
-const { width } = Dimensions.get("window");
+// const { width } = Dimensions.get("window");
+// console.log(width);
 
 const LanguageProfile = () => {
   const route = useRoute();
@@ -147,7 +148,7 @@ const LanguageProfile = () => {
             <View
               style={[
                 styles.modalContent,
-                width < 400 && styles.modalContentSmall,
+                // width < 400 && styles.modalContentSmall,
               ]}
             >
               <Text style={styles.modalHeading}>Enter Question and Answer</Text>
