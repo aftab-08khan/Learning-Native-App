@@ -55,12 +55,16 @@ const QuestionsAnswer = () => {
       const mainCollectionSnapshot = await getDocs(
         collection(db, "languages", languageName, collectionName)
       );
-
       const allQuestions = [];
       for (const doc of mainCollectionSnapshot.docs) {
-        allQuestions.push({ id: doc.id, ...doc.data() });
+        const data = doc.data();
+        allQuestions.push({
+          id: doc.id,
+          question: String(data.question),
+          answer: String(data.answer),
+          ...data,
+        });
       }
-
       setQuestionAnswerData(allQuestions);
     } catch (error) {
       Alert.alert("Error");
@@ -199,6 +203,8 @@ const QuestionsAnswer = () => {
       </SafeAreaView>
     );
   }
+  console.log(questionAnswerData, "questionAnswerData");
+
   if (questionAnswerData.length === 0) {
     return (
       <SafeAreaView
@@ -301,9 +307,7 @@ const QuestionsAnswer = () => {
                       <Ionicons name="trash-outline" size={20} color="red" />
                     </TouchableOpacity>
                   </View>
-                ) : (
-                  ""
-                )}
+                ) : null}
               </View>
               <Text
                 style={[
